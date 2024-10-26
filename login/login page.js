@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { TouchableOpacity } from 'react-native';
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginPage = ({ navigation }) => {
   const [allChecked, setAllChecked] = useState(false);
@@ -18,7 +19,22 @@ const LoginPage = ({ navigation }) => {
 
   const handleConfirmPress = () => {
     if (termsChecked && privacyChecked) {
-      navigation.navigate('LoginMain');
+      // 약관 동의 정보를 백엔드로 전송
+      axios.post('http://172.30.1.6:5000/join/check', {
+        input_cl1: termsChecked ? 'y' : 'n',
+        input_cl2: privacyChecked ? 'y' : 'n'
+      })
+      .then(response => {
+        if (response.data.message === "next") {
+          navigation.navigate('LoginMain');
+        } else {
+          setErrorMessage(response.data.message);  // 서버에서 받은 메시지 표시
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setErrorMessage('서버와 통신 중 문제가 발생했습니다.');
+      });
     } else {
       setErrorMessage('필수 항목을 체크해주세요');
     }
@@ -26,6 +42,10 @@ const LoginPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back" size={30} color="black" />
+      </TouchableOpacity>
+
       <Text style={styles.header}>서비스 이용 동의</Text>
       <ScrollView>
         <View style={styles.checkboxContainer}>
@@ -66,10 +86,16 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
   },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    marginTop: 40, // 뒤로 가기 버튼 아래에 공간 추가
   },
   checkboxContainer: {
     flexDirection: 'row',

@@ -1,21 +1,34 @@
-import React, { useRef, useState } from 'react';
-import { View, Button, StyleSheet, Image, TouchableOpacity, Text } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 
 const Camera = () => {
+  const navigation = useNavigation();
   const cameraRef = useRef(null);
-  const [imageUri, setImageUri] = useState(null);
-  const [showCamera, setShowCamera] = useState(true);
-  const [serverResponse, setServerResponse] = useState(null);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const storedToken = await AsyncStorage.getItem('access_token');
+      if (storedToken) {
+        setToken(storedToken);
+      } else {
+        Alert.alert('오류', '인증 정보가 없습니다. 다시 로그인해주세요.');
+        navigation.navigate('Login');
+      }
+    };
+
+    fetchToken();
+  }, []);
 
   const takePicture = async () => {
-    if (cameraRef.current) {
+    if (cameraRef.current && token) {
       const options = { quality: 0.5, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
-      console.log('Picture taken:', data.uri);
-      setImageUri(data.uri);
-      setShowCamera(false);
 
       const formData = new FormData();
       formData.append('file', {
@@ -25,55 +38,44 @@ const Camera = () => {
       });
 
       try {
-        const response = await axios.post('http://172.30.1.100:5000/predict', formData, {
+        const response = await axios.post('http://172.30.1.6:5000/take_pic', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
           },
         });
-        console.log('Server response:', response.data);
-        setServerResponse(response.data);
+
+        navigation.navigate('Result', { serverResponse: response.data }); // 결과 페이지로 이동
       } catch (error) {
         console.error('Error uploading the file:', error);
       }
+    } else {
+      Alert.alert('오류', '카메라 또는 인증 토큰이 없습니다.');
     }
   };
 
-  const retakePicture = () => {
-    setImageUri(null);
-    setShowCamera(true);
-    setServerResponse(null);
+  const goBack = () => {
+    navigation.goBack(); // 뒤로가기 기능
   };
 
   return (
     <View style={styles.container}>
-      {showCamera ? (
-        <RNCamera
-          ref={cameraRef}
-          style={styles.preview}
-          type={RNCamera.Constants.Type.back}
-          autoFocus={RNCamera.Constants.AutoFocus.on}
-          flashMode={RNCamera.Constants.FlashMode.auto}
-        >
-          <View style={styles.cameraControls}>
-            <Button title="Take Picture" onPress={takePicture} />
-          </View>
-        </RNCamera>
-      ) : (
-        <View style={styles.imageContainer}>
-          {imageUri && (
-            <Image source={{ uri: imageUri }} style={styles.image} />
-          )}
-          {serverResponse && (
-            <View>
-              <Text>Server Response:</Text>
-              <Text>{JSON.stringify(serverResponse, null, 2)}</Text>
-            </View>
-          )}
-          <TouchableOpacity style={styles.retakeButton} onPress={retakePicture}>
-            <Button title="Retake Picture" onPress={retakePicture} />
+      <RNCamera
+        ref={cameraRef}
+        style={styles.preview}
+        type={RNCamera.Constants.Type.back}
+        autoFocus={RNCamera.Constants.AutoFocus.on}
+        flashMode={RNCamera.Constants.FlashMode.auto}
+      >
+        <TouchableOpacity style={styles.backButton} onPress={goBack}>
+          <Icon name="arrow-back" size={30} color="white" />
+        </TouchableOpacity>
+        <View style={styles.cameraControls}>
+          <TouchableOpacity style={styles.circleButton} onPress={takePicture}>
+            <Text style={styles.buttonText}>사진 찍기</Text>
           </TouchableOpacity>
         </View>
-      )}
+      </RNCamera>
     </View>
   );
 };
@@ -88,29 +90,30 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
   cameraControls: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     padding: 20,
   },
-  imageContainer: {
-    flex: 1,
+  circleButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#007bff',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    backgroundColor: 'black',
-    padding: 20,
+    marginBottom: 20,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  retakeButton: {
-    marginTop: 20,
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
 export default Camera;
-

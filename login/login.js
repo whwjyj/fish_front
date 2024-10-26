@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Button } from 'react-native-elements';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -14,10 +16,33 @@ const Login = ({ navigation }) => {
     setPassword(newText);
   };
 
-  const handleLoginPress = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigation.navigate('Main');
+  const handleLoginPress = async () => {
+    if (email === '' || password === '') {
+      Alert.alert('실패', '아이디 또는 비밀번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://172.30.1.6:5000/login', {
+        input_id: email,
+        input_password: password,
+      });
+
+      if (response.status === 200) {
+        console.log('Login successful:', response.data);
+
+        // access_token을 AsyncStorage에 저장
+        await AsyncStorage.setItem('access_token', response.data.access_token);
+
+
+        navigation.navigate('Main');
+      } else {
+        Alert.alert('Login Failed', response.data.message || '아이디 또는 비밀번호를 확인해주세요.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Login Failed', error.response?.data?.message || '아이디 또는 비밀번호를 확인해주세요.');
+    }
   };
 
   const handleSignUpPress = () => {
@@ -117,5 +142,6 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
 });
+
 
 export default Login;

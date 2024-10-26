@@ -5,19 +5,23 @@ import { useNavigation } from '@react-navigation/native';
 
 const Main = () => {
     const [searchText, setSearchText] = useState('');
-    const navigation = useNavigation();  // 네비게이션 객체 가져오기
+    const navigation = useNavigation();
 
     const searchCheck = () => {
         console.log('검색어:', searchText);
     };
 
     const CameraPress = () => {
-        navigation.navigate('Camera');  // 'Camera' 화면으로 이동
+        navigation.navigate('Camera');
+    };
+
+    const MyPage = () => {
+        navigation.navigate('Mypage');
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>회 인식 App</Text>
+            <Text style={styles.header}>회탐정</Text>
             <View style={styles.searchContainer}>
                 <Icon name="search" size={24} color="#888" style={styles.searchIcon} />
                 <TextInput
@@ -38,7 +42,7 @@ const Main = () => {
                 <TouchableOpacity style={styles.barButton} onPress={() => console.log('홈 눌림')}>
                     <Icon name="home" size={30} color="#888" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.footerButton} onPress={() => console.log('사용자 눌림')}>
+                <TouchableOpacity style={styles.footerButton} onPress={MyPage}>
                     <Icon name="person" size={30} color="#888" />
                 </TouchableOpacity>
             </View>
