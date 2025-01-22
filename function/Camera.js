@@ -26,8 +26,13 @@ const Camera = () => {
   }, []);
 
   const takePicture = async () => {
-    if (cameraRef.current && token) {
-      const options = { quality: 0.5, base64: true };
+    if (!cameraRef.current || !token) {
+      Alert.alert('오류', '카메라 또는 인증 토큰이 없습니다.');
+      return;
+    }
+
+    try {
+      const options = { quality: 0.4, base64: true }; // 품질을 낮춰 데이터 크기 줄이기
       const data = await cameraRef.current.takePictureAsync(options);
 
       const formData = new FormData();
@@ -37,25 +42,27 @@ const Camera = () => {
         name: 'image.jpg',
       });
 
-      try {
-        const response = await axios.post('http://172.30.1.6:5000/take_pic', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+      // 서버 요청과 결과 화면 전환을 병렬 처리
+      const responsePromise = axios.post('http://172.30.1.6:5000/take_pic', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-        navigation.navigate('Result', { serverResponse: response.data }); // 결과 페이지로 이동
-      } catch (error) {
-        console.error('Error uploading the file:', error);
-      }
-    } else {
-      Alert.alert('오류', '카메라 또는 인증 토큰이 없습니다.');
+      // 서버 응답 대기
+      const response = await responsePromise;
+
+      // 결과 화면으로 이동
+      navigation.navigate('Result', { serverResponse: response.data });
+    } catch (error) {
+      console.error('Error uploading the file:', error);
+      Alert.alert('오류', '사진 처리 중 문제가 발생했습니다.');
     }
   };
 
   const goBack = () => {
-    navigation.goBack(); // 뒤로가기 기능
+    navigation.goBack();
   };
 
   return (
