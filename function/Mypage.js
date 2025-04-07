@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
 const Mypage = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // 훅, 다른화면 이동
 
   const handlePrivacyPolicy = () => {
     Alert.alert(
@@ -56,7 +56,7 @@ const Mypage = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> // JSX
       <View style={styles.header}>
         <Text style={styles.headerText}>마이페이지</Text>
       </View>
@@ -77,7 +77,7 @@ const Mypage = () => {
         <Text style={styles.deleteButtonText}>회원 탈퇴</Text>
       </TouchableOpacity>
 
-      {/* 개인정보처리방침 버튼 추가 */}
+
       <TouchableOpacity
         style={styles.privacyButton}
         onPress={handlePrivacyPolicy}

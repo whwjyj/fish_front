@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
 const Main = () => {
-    const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState(''); // 검색창 상태관리
     const navigation = useNavigation();
 
     const searchCheck = () => {
@@ -20,7 +20,7 @@ const Main = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}> // 컨테이너
             <Text style={styles.header}>회탐정</Text>
             <View style={styles.searchContainer}>
                 <Icon name="search" size={24} color="#888" style={styles.searchIcon} />

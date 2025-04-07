@@ -15,7 +15,7 @@ const Camera = () => {
     const fetchToken = async () => {
       const storedToken = await AsyncStorage.getItem('access_token');
       if (storedToken) {
-        setToken(storedToken);
+        setToken(storedToken); // 로그인 토큰 가져옴
       } else {
         Alert.alert('오류', '인증 정보가 없습니다. 다시 로그인해주세요.');
         navigation.navigate('Login');
@@ -32,7 +32,7 @@ const Camera = () => {
     }
 
     try {
-      const options = { quality: 0.4, base64: true }; // 품질을 낮춰 데이터 크기 줄이기
+      const options = { quality: 0.4, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
 
       const formData = new FormData();
@@ -53,7 +53,7 @@ const Camera = () => {
       // 서버 응답 대기
       const response = await responsePromise;
 
-      // 결과 화면으로 이동
+
       navigation.navigate('Result', { serverResponse: response.data });
     } catch (error) {
       console.error('Error uploading the file:', error);

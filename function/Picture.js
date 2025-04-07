@@ -6,11 +6,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
 const Picture = () => {
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState([]);  // 서버에서 받은 이미지
     const [loading, setLoading] = useState(false);
     const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [selectedImages, setSelectedImages] = useState([]);
-    const navigation = useNavigation(); // navigation 객체 사용
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchImages();
@@ -53,7 +53,7 @@ const Picture = () => {
                 setSelectedImages([...selectedImages, index]);
             }
         }
-    };
+    }; // 삭제 모드때만 동작, 클릭
 
     const deleteSelectedImages = async () => {
         Alert.alert(
