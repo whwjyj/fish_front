@@ -3,7 +3,8 @@
 # 기술 스택
 ✓Frontend
 
-![React Native]([https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white](https://img.shields.io/badge/React%20Native-4FC08D?style=for-the-badge&logo=React&logoColor=white))
+![React Native](https://img.shields.io/badge/React%20Native-4FC08D?style=for-the-badge&logo=React&logoColor=white)
+
 
 ✓ Backend
 
