@@ -3,4 +3,9 @@
 # 기술 스택
 ✓Frontend
 
-![React Native](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
+![React Native]([https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white](https://img.shields.io/badge/React%20Native-4FC08D?style=for-the-badge&logo=React&logoColor=white))
+
+✓ Backend
+
+![Flask]([[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)))
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
